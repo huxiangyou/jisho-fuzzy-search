@@ -1,0 +1,9 @@
+*.*
+
+!.gitignore
+!README.md
+!LICENSE
+!handle.py
+!search.py
+!jaconv.py
+!colorprint.py
