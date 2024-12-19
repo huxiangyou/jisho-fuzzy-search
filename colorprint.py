@@ -1,53 +1,75 @@
 """Print with colors
-"""
-"""
-Python 3.9
+
+Python 3.12
 
 Hu Xiangyou
 March 24, 2021
 May 12, 2021
 Oct 22, 2021
+June 11, 2024
+
+Part of https://github.com/huxiangyou/hulubot
+under MIT License
 """
 
 import ctypes
 import builtins
 
-class Color:
-	def __init__(self,code:int):
-		self.code=code
+C_WHITE=15
+C_SILVER=7
+C_GRAY=8
+C_BLACK=0
+C_RED=12
+C_MAROON=4
+C_YELLOW=14
+C_OLIVE=6
+C_LIME=10
+C_GREEN=2
+C_CYAN=11
+C_TEAL=3
+C_BLUE=9
+C_NAVY=1
+C_MAGENTA=13
+C_PURPLE=5
 
-WHITE=Color(15)
-SILVER=Color(7)
-GRAY=Color(8)
-BLACK=Color(0)
-RED=Color(12)
-MAROON=Color(4)
-YELLOW=Color(14)
-OLIVE=Color(6)
-LIME=Color(10)
-GREEN=Color(2)
-CYAN=Color(11)
-TEAL=Color(3)
-BLUE=Color(9)
-NAVY=Color(1)
-MAGENTA=Color(13)
-PURPLE=Color(5)
-BGWHITE=Color(15<<4)
-BGSILVER=Color(7<<4)
-BGGRAY=Color(8<<4|15)
-BGBLACK=Color(0<<4|15)
-BGRED=Color(12<<4|15)
-BGMAROON=Color(4<<4|15)
-BGYELLOW=Color(14<<4)
-BGOLIVE=Color(6<<4|15)
-BGLIME=Color(10<<4)
-BGGREEN=Color(2<<4|15)
-BGCYAN=Color(11<<4)
-BGTEAL=Color(3<<4|15)
-BGBLUE=Color(9<<4|15)
-BGNAVY=Color(1<<4|15)
-BGMAGENTA=Color(13<<4|15)
-BGPURPLE=Color(5<<4|15)
+class Color:
+	def __init__(self,foreground:int=0,background:int=0):
+		self.code=foreground|background<<4
+
+WHITE=Color(C_WHITE)
+SILVER=Color(C_SILVER)
+GRAY=Color(C_GRAY)
+BLACK=Color(C_BLACK)
+RED=Color(C_RED)
+MAROON=Color(C_MAROON)
+YELLOW=Color(C_YELLOW)
+OLIVE=Color(C_OLIVE)
+LIME=Color(C_LIME)
+GREEN=Color(C_GREEN)
+CYAN=Color(C_CYAN)
+TEAL=Color(C_TEAL)
+BLUE=Color(C_BLUE)
+NAVY=Color(C_NAVY)
+MAGENTA=Color(C_MAGENTA)
+PURPLE=Color(C_PURPLE)
+
+BGWHITE=Color(C_BLACK,C_WHITE)
+BGSILVER=Color(C_BLACK,C_SILVER)
+BGGRAY=Color(C_WHITE,C_GRAY)
+BGBLACK=Color(C_WHITE,C_BLACK)
+BGRED=Color(C_WHITE,C_RED)
+BGMAROON=Color(C_WHITE,C_MAROON)
+BGYELLOW=Color(C_BLACK,C_YELLOW)
+BGOLIVE=Color(C_WHITE,C_OLIVE)
+BGLIME=Color(C_BLACK,C_LIME)
+BGGREEN=Color(C_WHITE,C_GREEN)
+BGCYAN=Color(C_BLACK,C_CYAN)
+BGTEAL=Color(C_WHITE,C_TEAL)
+BGBLUE=Color(C_WHITE,C_BLUE)
+BGNAVY=Color(C_WHITE,C_NAVY)
+BGMAGENTA=Color(C_WHITE,C_MAGENTA)
+BGPURPLE=Color(C_WHITE,C_PURPLE)
+
 DEFAULT=SILVER
 
 def _print(*args:list[str|Color],sep:str=" ",end:str="\n"):
@@ -59,28 +81,15 @@ def _print(*args:list[str|Color],sep:str=" ",end:str="\n"):
 			ctypes.windll.kernel32.SetConsoleTextAttribute(ctypes.windll.kernel32.GetStdHandle(-11),arg.code)
 		else:
 			if index==0:
-				ctypes.windll.kernel32.SetConsoleTextAttribute(ctypes.windll.kernel32.GetStdHandle(-11),7)
+				ctypes.windll.kernel32.SetConsoleTextAttribute(ctypes.windll.kernel32.GetStdHandle(-11),DEFAULT.code)
 			if index+1==len(args):
 				builtins.print(arg,end="",flush=True)
-				ctypes.windll.kernel32.SetConsoleTextAttribute(ctypes.windll.kernel32.GetStdHandle(-11),7)
+				ctypes.windll.kernel32.SetConsoleTextAttribute(ctypes.windll.kernel32.GetStdHandle(-11),DEFAULT.code)
 				builtins.print(end=end,flush=True)
 			else:
 				builtins.print(arg,end=sep,flush=True)
 
-def _logger(*args:list[str|Color],sep:str=" ",end:str="\n"):
-	with open('output.txt','a+',encoding='utf-8') as f:
-		f.write(sep.join(str(arg) for arg in args if not isinstance(arg,Color))+end)
-
-def logger(*args:list[str|Color],sep:str=" ",end:str="\n"):
-	_print(*args,sep=sep,end=end)
-	_logger(*args,sep=sep,end=end)
-
 print=_print
-
-def useLogger()->callable:
-	with open('output.txt','w',encoding='utf-8') as f:
-		f.truncate()
-	return logger
 
 if __name__=="__main__":
 	print(WHITE,"■ WHITE")

@@ -3,7 +3,7 @@
 !.gitignore
 !README.md
 !LICENSE
-!handle.py
+!process.py
 !search.py
 !jaconv.py
 !colorprint.py
